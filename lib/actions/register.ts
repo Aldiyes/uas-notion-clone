@@ -8,6 +8,8 @@ const formSchema = z.object({
   password: z.string().min(6),
 });
 
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL;
+
 export const register = async (values: z.infer<typeof formSchema>) => {
   const validatedFields = formSchema.safeParse(values);
 
@@ -15,5 +17,15 @@ export const register = async (values: z.infer<typeof formSchema>) => {
     return { error: "Invalid fields!" };
   }
 
-  return { success: "Email Sent!" };
+  const res = await fetch(`${APP_DOMAIN}/api/auth/register`, {
+    method: "POST",
+    body: JSON.stringify(values),
+    headers: {
+      "content-type": "application/json",
+    },
+  });
+
+  const data = await res.json();
+
+  return data;
 };
