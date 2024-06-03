@@ -1,17 +1,12 @@
 "use server";
 
+import { RegisterSchema } from "@/lib/schemas";
 import * as z from "zod";
-
-const formSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
-  password: z.string().min(6),
-});
 
 const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL;
 
-export const register = async (values: z.infer<typeof formSchema>) => {
-  const validatedFields = formSchema.safeParse(values);
+export const register = async (values: z.infer<typeof RegisterSchema>) => {
+  const validatedFields = RegisterSchema.safeParse(values);
 
   if (!validatedFields.success) {
     return { error: "Invalid fields!" };

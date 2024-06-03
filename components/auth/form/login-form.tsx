@@ -4,10 +4,10 @@ import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { login } from "@/lib/actions/login";
 import { LoginSchema } from "@/lib/schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { CardWraper } from "@/components/auth/ui/card-wraper";
 import { FormError } from "@/components/auth/ui/form-error";

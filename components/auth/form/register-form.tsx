@@ -6,6 +6,9 @@ import * as z from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { register } from "@/lib/actions/register";
+import { RegisterSchema } from "@/lib/schemas";
+
 import { CardWraper } from "@/components/auth/ui/card-wraper";
 import { FormError } from "@/components/auth/ui/form-error";
 import { FormSuccess } from "@/components/auth/ui/form-success";
@@ -19,27 +22,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { register } from "@/lib/actions/register";
-
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Email is required",
-  }),
-  password: z.string().min(6, {
-    message: "Minimum 6 characters required",
-  }),
-  name: z.string().min(1, {
-    message: "Name is required",
-  }),
-});
 
 export const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof RegisterSchema>>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -47,7 +37,7 @@ export const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     setError("");
     setSuccess("");
     startTransition(() => {
