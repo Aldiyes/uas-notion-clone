@@ -1,12 +1,12 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
-import { login } from "@/lib/actions/login";
+import { login } from "@/lib/actions/auth/login";
 import { LoginSchema } from "@/lib/schemas";
 
 import { CardWraper } from "@/components/auth/ui/card-wraper";

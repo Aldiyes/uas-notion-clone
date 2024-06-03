@@ -6,7 +6,7 @@ import * as z from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { register } from "@/lib/actions/register";
+import { register } from "@/lib/actions/auth/register";
 import { RegisterSchema } from "@/lib/schemas";
 
 import { CardWraper } from "@/components/auth/ui/card-wraper";
