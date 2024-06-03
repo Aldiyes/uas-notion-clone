@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: Iyesss
+      POSTGRES_PASSWORD: aldiyes17032002
+      POSTGRES_DB: notion_clone_pgdb
+    ports:
+      - 5432:5432
