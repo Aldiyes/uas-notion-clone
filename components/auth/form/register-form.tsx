@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { register } from "@/lib/actions/register";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -35,6 +36,7 @@ const formSchema = z.object({
 export const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,8 +48,14 @@ export const RegisterForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // TODO: Handle Register
-    console.log("[REGISTER-FORM VALUES] - ", values);
+    setError("");
+    setSuccess("");
+    startTransition(() => {
+      register(values).then((data) => {
+        setError(data.error);
+        setSuccess(data.success);
+      });
+    });
   };
 
   return (

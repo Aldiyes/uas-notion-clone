@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { login } from "@/lib/actions/login";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -34,6 +35,7 @@ const formSchema = z.object({
 export const LoginForm = () => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,8 +46,14 @@ export const LoginForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // TODO: Handle Login
-    console.log("[LOGIN-FORM VALUES] - ", values);
+    setError("");
+    setSuccess("");
+    startTransition(() => {
+      login(values).then((data) => {
+        setError(data.error);
+        setSuccess(data.success);
+      });
+    });
   };
 
   return (
@@ -69,6 +77,7 @@ export const LoginForm = () => {
                       {...field}
                       placeholder="john.doe@example.com"
                       type="email"
+                      disabled={isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -82,7 +91,12 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="******" type="password" />
+                    <Input
+                      {...field}
+                      placeholder="******"
+                      type="password"
+                      disabled={isPending}
+                    />
                   </FormControl>
                   <Button
                     size="sm"
@@ -99,7 +113,11 @@ export const LoginForm = () => {
           </div>
           <FormSuccess message={success} />
           <FormError message={error} />
-          <Button type="submit" className="w-full font-semibold">
+          <Button
+            type="submit"
+            className="w-full font-semibold"
+            disabled={isPending}
+          >
             Login
           </Button>
         </form>
