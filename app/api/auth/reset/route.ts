@@ -85,5 +85,10 @@ export async function PATCH(req: NextRequest) {
       { success: "Password updated successfully" },
       { status: 201 },
     );
-  } catch (error) {}
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
 }
