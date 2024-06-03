@@ -1,13 +1,10 @@
 "use server";
 
-import { ResetSchema } from "@/lib/schemas";
-
-import { getUserByEmail } from "@/data/user";
-
-import { sendPasswordResetEmail } from "@/lib/mail";
-import { generatePasswordResetToken } from "@/lib/tokens";
+import { ResetSchema, NewPasswordSchema } from "@/lib/schemas";
 
 import * as z from "zod";
+
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL;
 
 export const reset = async (values: z.infer<typeof ResetSchema>) => {
   const validatedFields = ResetSchema.safeParse(values);
@@ -16,19 +13,46 @@ export const reset = async (values: z.infer<typeof ResetSchema>) => {
     return { error: "Invalid Email" };
   }
 
-  const { email } = validatedFields.data;
+  const res = await fetch(`${APP_DOMAIN}/api/auth/reset`, {
+    method: "POST",
+    body: JSON.stringify(values),
+    headers: {
+      "content-type": "application/json",
+    },
+  });
 
-  const existingUser = await getUserByEmail(email);
+  const data = await res.json();
 
-  if (!existingUser) {
-    return { error: "Email not found!" };
+  return data;
+};
+
+export const newPassword = async (
+  values: z.infer<typeof NewPasswordSchema>,
+  token?: string | null,
+) => {
+  if (!token) {
+    return { error: "Missing token!" };
   }
 
-  // TODO: Generate token and Send email
-  const passwordResetToken = await generatePasswordResetToken(email);
-  await sendPasswordResetEmail(
-    passwordResetToken.email,
-    passwordResetToken.token,
-  );
-  return { success: "Reset email sent!" };
+  const validatedFields = NewPasswordSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { password } = validatedFields.data;
+
+  const dataSend = { password, token };
+
+  const res = await fetch(`${APP_DOMAIN}/api/auth/reset`, {
+    method: "PATCH",
+    body: JSON.stringify(dataSend),
+    headers: {
+      "content-type": "application/json",
+    },
+  });
+
+  const data = await res.json();
+
+  return data;
 };
